@@ -1,102 +1,209 @@
-# helpme - Shell 自然语言命令助手
+# helpme 🤖
 
-**创建日期：** 2026-03-06  
-**最后更新：** 2026-03-06  
-**状态：** 🟡 立项阶段
+> 别再 Google "find 命令参数" 了，直接问！
 
----
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Ollama](https://img.shields.io/badge/Ollama-llama3.2-blue)](https://ollama.com)
 
-## 项目目标
+## 🤔 你是不是也这样？
 
-在 bash/shell 中实现 `helpme <自然语言描述>` 命令，自动将用户需求转换为 Linux 命令。
-
-**示例：**
 ```bash
-helpme 找出当前目录下大于 10MB 的文件
-# 输出：find . -type f -size +10M
+# 想找大于 10MB 的文件，但不记得 find 参数...
+find . -size ??? -type ???
 
-helpme 查看端口 8080 被哪个进程占用
-# 输出：lsof -i :8080 或 netstat -tlnp | grep 8080
+# 最后 Google："find 大于 10MB 文件 命令"
+# 点开第 3 个链接
+# 复制粘贴
+# 执行
+# 忘了参数啥意思
+```
+
+**现在可以这样：**
+
+```bash
+helpme 找出大于 10MB 的文件
+
+# 输出：
+⏳ 正在生成命令...
+命令：find . -type f -size +10M
+解释：find 查找工具 | -type f 只找文件 | -size +10M 大于 10MB
+```
+
+**✨ 命令有了，参数也懂了，下次就会了！**
+
+---
+
+## 🚀 快速开始
+
+### 1 分钟安装
+
+```bash
+# 1. 确保 Ollama 已安装（没装？https://ollama.com）
+ollama --version
+
+# 2. 下载模型（首次约 2GB）
+ollama pull llama3.2:latest
+
+# 3. 克隆并安装
+git clone git@github.com:Zhuzewen2023/helpme.git
+cd helpme
+./install.sh
+
+# 4. 开始用！
+helpme 找出大于 10MB 的文件
+```
+
+### 如果 install.sh 失败...
+
+```bash
+# 手动安装（3 步）
+pip3 install requests --user
+echo 'helpme() { python3 $(pwd)/helpme.py "$@"; }' >> ~/.bashrc
+source ~/.bashrc
 ```
 
 ---
 
-## 技术选型
+## 💬 使用示例
 
-| 组件 | 选择 | 原因 |
-|------|------|------|
-| AI 引擎 | Ollama (本地) | 隐私好、免费、快速 |
-| 推荐模型 | qwen2.5:7b | 中文支持好、轻量 |
-| 集成方式 | Shell 函数 + Python 脚本 | 灵活、易调试 |
-| 安全机制 | 危险命令二次确认 | 防止误执行 rm/dd 等 |
-
----
-
-## 开发进度
-
-### ✅ 已完成
-- [x] 项目立项（2026-03-06）
-- [ ] 环境检测
-- [ ] 核心脚本开发
-- [ ] Shell 集成
-- [ ] 安全确认机制
-- [ ] 测试验证
-
-### ⏳ 下一步
-1. 执行环境检测（检查 Ollama 是否安装）
-2. 如未安装，安装 Ollama 并下载模型
-3. 创建 `helpme.py` 核心脚本
-
----
-
-## 目录结构
-
+### 文件操作
+```bash
+helpme 找出大于 10MB 的文件
+helpme 找出最近修改的文件
+helpme 统计当前目录有多少文件
 ```
-helpme-shell-assistant/
-├── README.md              # 本文件
-├── helpme.py              # 核心脚本（待创建）
-├── helpme.sh              # Shell 集成脚本（待创建）
-├── test/                  # 测试用例（待创建）
-│   └── test_cases.md
-└── docs/                  # 文档（待创建）
-    └── design.md
+
+### 文本处理
+```bash
+helpme 统计每行第一个字段的和
+helpme 找出包含 "error" 的行
+helpme 把文件里的 tab 换成空格
+```
+
+### 网络相关
+```bash
+helpme 检查 80 端口是否开放
+helpme 下载这个 URL 的文件
+helpme 测试网站能不能访问
+```
+
+### 系统信息
+```bash
+helpme 查看内存使用
+helpme 查看磁盘空间
+helpme 找出最占 CPU 的进程
 ```
 
 ---
 
-## 技术架构
+## 🎯 输出说明
 
-```
-用户输入 (bash)
-    ↓
-helpme 别名/函数
-    ↓
-helpme.py (Python 脚本)
-    ↓
-Ollama API (本地 AI)
-    ↓
-命令建议 → 用户确认 → 执行
+```bash
+$ helpme 解压 tar.gz 文件
+
+⏳ 正在生成命令...
+命令：tar -xzf file.tar.gz
+解释：tar 归档工具 | -x 解压 | -z gzip 格式 | -f 指定文件
 ```
 
----
-
-## 安全考虑
-
-**危险命令检测：**
-- `rm -rf`、`dd`、`mkfs`、`chmod 777` 等
-- 检测到危险命令时，强制二次确认
-- 输出：`⚠️ 此命令会删除文件，确认执行？(y/N)`
+| 部分 | 说明 |
+|------|------|
+| `⏳` | 正在生成（1-3 秒） |
+| `命令：` | 可以直接复制执行 |
+| `解释：` | 参数含义，用 `|` 分隔 |
 
 ---
 
-## 相关文件
+## 🔧 配置
 
-- 项目位置：`/home/Documents/GPTProjects/工具/helpme-shell-assistant/`
-- 归档位置：同项目目录（自包含）
+### 换个模型
+
+编辑 `helpme.py`：
+```python
+MODEL = "qwen2.5:7b"  # 更大更聪明，但更慢
+```
+
+### 远程 Ollama 服务
+
+编辑 `helpme.py`：
+```python
+OLLAMA_API = "http://your-server:11434/api/generate"
+```
+
+### 修改解释长度
+
+编辑 `helpme.py` 里的 `build_prompt()` 函数。
 
 ---
 
-## 参考资料
+## 🛠️ 开发
 
-- Ollama 官方文档：https://ollama.com/
-- Qwen2.5 模型：https://ollama.com/library/qwen2.5
+### 项目结构
+```
+helpme/
+├── helpme.py           # 核心脚本（100 行）
+├── install.sh          # 自动安装脚本
+├── README.md           # 你在看的这个
+├── .gitignore          # Git 忽略文件
+└── helpme.py.progress.md  # 开发进度日志
+```
+
+### 贡献
+1. Fork 本项目
+2. 创建功能分支 (`git checkout -b feature/AmazingFeature`)
+3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
+4. 推送到分支 (`git push origin feature/AmazingFeature`)
+5. 开启一个 Pull Request
+
+---
+
+## 📝 开发日志
+
+- **2026-03-08** v1.0 发布 🎉
+  - 核心功能完成
+  - 自动安装脚本
+  - 命令 + 解释输出
+
+---
+
+## 🤝 感谢
+
+- [Ollama](https://ollama.com) - 本地 AI 模型运行
+- [llama3.2](https://ollama.com/library/llama3.2) - 快速轻量的模型
+
+---
+
+## 📄 许可证
+
+MIT License - 随便用，别告我，记得署名 😄
+
+---
+
+## ⭐ 如果好用，给个 Star！
+
+```bash
+# 在 GitHub 页面右上角点 Star ⭐
+# 不用花钱，对我很重要！
+```
+
+---
+
+## 🙏 常见问题
+
+**Q: 为什么这么慢？**  
+A: 首次运行要加载模型（约 5 秒），之后 1-3 秒。
+
+**Q: 命令能直接执行吗？**  
+A: 可以！但危险命令（如 rm）请先确认。
+
+**Q: 需要联网吗？**  
+A: 不需要！Ollama 本地运行，隐私安全。
+
+**Q: 能自定义提示词吗？**  
+A: 可以！编辑 `helpme.py` 里的 `build_prompt()` 函数。
+
+**Q: 报错 "Connection refused"**  
+A: 执行 `ollama serve` 启动服务。
+
+**Q: 代理问题连不上**  
+A: 执行 `unset ALL_PROXY HTTP_PROXY HTTPS_PROXY`
